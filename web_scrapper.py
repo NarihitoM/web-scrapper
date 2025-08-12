@@ -61,7 +61,7 @@ def scrape_with_selenium(url: str):
 
 # Request function: (updated for SSL verification and js rendering)
 def request_by_module_requests(url: str):
-    print(f"Using Selenium for {url} ...")
+    print(f"Using With Selenium...")
     html = scrape_with_selenium(url)
     if html != "-1":
         return html
@@ -145,3 +145,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
