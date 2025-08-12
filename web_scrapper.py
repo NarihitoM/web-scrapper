@@ -13,9 +13,6 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 # Made by Narihito (A.K.A Hein Htet Aung TNT-2409)
 
-
-
-
 #InsecureRequestWarning for requests verify=False (New Method)
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -61,7 +58,7 @@ def scrape_with_selenium(url: str):
 
 # Request function: (updated for SSL verification and js rendering)
 def request_by_module_requests(url: str):
-    print(f"Using With Selenium...")
+    print(f"Using Selenium ...")
     html = scrape_with_selenium(url)
     if html != "-1":
         return html
@@ -82,9 +79,12 @@ def request_by_module_requests(url: str):
             time.sleep(2)
 
 #scrapper function run
-
 def run_scraper(url: str, auto_refresh: bool = False, refresh_interval: int = 60, refresh_times: int = 1):
     count = 0
+    output_file = "fetch_data.txt"
+    with open(output_file, "w", encoding="utf-8") as f:
+        f.write(f"Links scraped from {url}:\n\n")
+
     while True:
         print("Links found on " f"{url}:")
         html = request_by_module_requests(url)
@@ -93,18 +93,22 @@ def run_scraper(url: str, auto_refresh: bool = False, refresh_interval: int = 60
             return
 
         links = re.findall(r'<a\s+(?:[^>]*?\s+)?href=["\'](.*?)["\'](?:[^>]*)>(.*?)</a>', html, re.IGNORECASE | re.DOTALL)
-        for href, text in links:
-            clean_text = re.sub('<.*?>', '', text).strip()
-            if clean_text and href:
-                print(f"Header Website: {clean_text} | URL: {href}")
+        with open(output_file, "a", encoding="utf-8") as f:
+            for href, text in links:
+                clean_text = re.sub('<.*?>', '', text).strip()
+                if clean_text and href:
+                    line = f"Header Website: {clean_text} | URL: {href}"
+                    print(line)
+                    f.write(line + "\n")
         count += 1
         if not auto_refresh or count >= refresh_times:
             break
         print(f"Refreshing in {refresh_interval} seconds... ({count}/{refresh_times})")
         time.sleep(refresh_interval)
 
-#user input validation areas
+    print(f"\nAll scraped links saved to {output_file}")
 
+#user input validation areas
 def get_valid_int(prompt, min_value=1, max_value=600):
     while True:
         user_input = input(prompt)
@@ -145,4 +149,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
